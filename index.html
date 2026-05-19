@@ -17,25 +17,29 @@
             --card-bg: rgba(30, 41, 59, 0.7);
         }
 
-        * { box-sizing: border-box; }
+        * { 
+            box-sizing: border-box; 
+        }
+
         body {
             margin: 0;
             background: radial-gradient(circle at top right, #1e293b, #0f172a);
             font-family: 'Inter', 'Siemreab', sans-serif;
             color: #f8fafc;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
         }
 
-        /* ចំណងជើងកម្មវិធីថ្មី */
+        /* ចំណងជើងកម្មវិធី */
         .app-title {
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
             font-weight: 800;
             margin-bottom: 20px;
+            text-align: center;
             background: linear-gradient(to right, #38bdf8, #34d399, #f59e0b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -46,11 +50,11 @@
 
         .app-container {
             width: 100%;
-            height: 80vh;
-            max-width: 1200px;
+            max-width: 1400px;
             display: grid;
             grid-template-columns: 300px 1fr 280px;
             gap: 20px;
+            align-items: stretch;
         }
 
         .glass-panel {
@@ -62,13 +66,22 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-height: 250px;
         }
 
-        h2 { margin-top: 0; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        h2 { 
+            margin-top: 0; 
+            font-size: 1rem; 
+            color: var(--primary); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
         
         textarea {
             flex: 1;
             width: 100%;
+            min-height: 220px;
             background: rgba(15, 23, 42, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
@@ -82,7 +95,7 @@
 
         .btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: none;
             border-radius: 10px;
             font-weight: bold;
@@ -95,16 +108,36 @@
             gap: 8px;
             font-size: 14px;
         }
-        .btn-excel { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
-        .btn-spin { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; margin-top: 5px; font-size: 1.1rem; }
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
-        .middle-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-excel { 
+            background: rgba(16, 185, 129, 0.1); 
+            color: #34d399; 
+            border: 1px solid rgba(52, 211, 153, 0.3); 
+        }
+
+        .btn-spin { 
+            background: linear-gradient(135deg, #f59e0b, #d97706); 
+            color: white; 
+            margin-top: 5px; 
+            font-size: 1.1rem; 
+        }
+
+        .btn:hover { 
+            transform: translateY(-2px); 
+            opacity: 0.9; 
+        }
+
+        .middle-panel { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
         
         #wheelWrapper {
             position: relative;
-            width: 420px;
-            height: 420px;
+            width: min(80vw, 420px);
+            height: min(80vw, 420px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -115,7 +148,8 @@
             top: -5px;
             left: 50%;
             transform: translateX(-50%);
-            width: 0; height: 0;
+            width: 0; 
+            height: 0;
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
             border-top: 35px solid #ef4444;
@@ -124,8 +158,8 @@
         }
 
         canvas {
-            width: 400px;
-            height: 400px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             transition: transform 6s cubic-bezier(0.2, 0, 0, 1);
             border: 4px solid rgba(255, 255, 255, 0.1);
@@ -134,25 +168,116 @@
 
         #result {
             margin-top: 20px;
-            font-size: 2rem;
+            font-size: clamp(1.2rem, 4vw, 2rem);
             font-weight: 800;
             color: var(--accent);
             text-align: center;
             min-height: 45px;
+            word-break: break-word;
         }
 
-        .history-list { flex: 1; overflow-y: auto; }
+        .history-list { 
+            flex: 1; 
+            overflow-y: auto; 
+            max-height: 500px;
+        }
+
         .winner-row {
             background: rgba(255, 255, 255, 0.03);
             margin-bottom: 6px;
-            padding: 8px 12px;
+            padding: 10px 12px;
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            gap: 10px;
             font-size: 13px;
+            word-break: break-word;
         }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+        ::-webkit-scrollbar { 
+            width: 4px; 
+        }
+
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 10px; 
+        }
+
+        /* Tablet */
+        @media (max-width: 1100px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .glass-panel {
+                width: 100%;
+            }
+
+            textarea {
+                min-height: 180px;
+            }
+
+            .history-list {
+                max-height: 250px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .glass-panel {
+                padding: 15px;
+                border-radius: 18px;
+            }
+
+            #wheelWrapper {
+                width: min(90vw, 340px);
+                height: min(90vw, 340px);
+            }
+
+            .pointer {
+                border-left: 12px solid transparent;
+                border-right: 12px solid transparent;
+                border-top: 28px solid #ef4444;
+            }
+
+            .btn {
+                font-size: 13px;
+                padding: 11px;
+            }
+
+            textarea {
+                font-size: 12px;
+            }
+
+            .winner-row {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 400px) {
+
+            #wheelWrapper {
+                width: 95vw;
+                height: 95vw;
+            }
+
+            .app-title {
+                letter-spacing: 1px;
+            }
+
+            #result {
+                font-size: 1rem;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -224,59 +349,91 @@
 
         if (items.length === 0) {
             ctx.fillStyle = "rgba(255,255,255,0.05)";
-            ctx.beginPath(); ctx.arc(center, center, radius, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); 
+            ctx.arc(center, center, radius, 0, Math.PI * 2); 
+            ctx.fill();
             return;
         }
 
         const arc = (2 * Math.PI) / items.length;
+
         items.forEach((item, i) => {
             const angle = i * arc;
+
             ctx.beginPath();
             ctx.fillStyle = colors[i % colors.length];
             ctx.moveTo(center, center);
             ctx.arc(center, center, radius, angle, angle + arc);
             ctx.lineTo(center, center);
             ctx.fill();
+
             ctx.strokeStyle = "rgba(255,255,255,0.1)";
             ctx.stroke();
 
             ctx.save();
             ctx.translate(center, center);
             ctx.rotate(angle + arc / 2);
+
             ctx.textAlign = "right";
             ctx.fillStyle = "#fff";
-            ctx.font = items.length > 30 ? "22px Siemreab" : "bold 32px Siemreab";
-            ctx.fillText(item.length > 15 ? item.substring(0,13) + ".." : item, radius - 50, 10);
+
+            if(items.length > 50){
+                ctx.font = "18px Siemreab";
+            }else if(items.length > 30){
+                ctx.font = "22px Siemreab";
+            }else{
+                ctx.font = "bold 32px Siemreab";
+            }
+
+            ctx.fillText(
+                item.length > 15 ? item.substring(0,13) + ".." : item,
+                radius - 50,
+                10
+            );
+
             ctx.restore();
         });
     }
 
     function spin() {
+
         if (isSpinning || items.length < 2) return;
+
         isSpinning = true;
+
         document.getElementById("result").innerText = "Spinning...";
         
         const randomExtra = Math.random() * 360;
-        const spinTotal = 2880 + randomExtra; 
+        const spinTotal = 2880 + randomExtra;
+
         currentRotation += spinTotal;
 
         canvas.style.transform = `rotate(${currentRotation}deg)`;
 
         setTimeout(() => {
+
             isSpinning = false;
+
             const actualDegree = currentRotation % 360;
             const arcSize = 360 / items.length;
+
             const adjustedDegree = (360 - actualDegree + 270) % 360;
+
             const winnerIndex = Math.floor(adjustedDegree / arcSize);
+
             const winner = items[winnerIndex];
             
             document.getElementById("result").innerText = "🏆 " + winner;
+
             winners.unshift(winner);
+
             updateHistory();
+
         }, 6000);
     }
 
     function updateHistory() {
+
         document.getElementById("winnerList").innerHTML = winners.map((w, idx) => `
             <div class="winner-row">
                 <span><b>${w}</b></span>
@@ -286,6 +443,7 @@
     }
 
     autoProcess();
+
 </script>
 
 </body>
