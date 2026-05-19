@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luckydraw SOKHENG</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Siemreab&family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #38bdf8;
+            --secondary: #34d399;
+            --accent: #f59e0b;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            font-family: 'Inter', 'Siemreab', sans-serif;
+            color: #f8fafc;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ចំណងជើងកម្មវិធីថ្មី */
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #38bdf8, #34d399, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.3));
+        }
+
+        .app-container {
+            width: 100%;
+            height: 80vh;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 300px 1fr 280px;
+            gap: 20px;
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        h2 { margin-top: 0; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        textarea {
+            flex: 1;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .btn-excel { background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+        .btn-spin { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; margin-top: 5px; font-size: 1.1rem; }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .middle-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        #wheelWrapper {
+            position: relative;
+            width: 420px;
+            height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 35px solid #ef4444;
+            z-index: 100;
+            filter: drop-shadow(0 4px 5px rgba(0,0,0,0.5));
+        }
+
+        canvas {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            transition: transform 6s cubic-bezier(0.2, 0, 0, 1);
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0,0,0,0.4);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-align: center;
+            min-height: 45px;
+        }
+
+        .history-list { flex: 1; overflow-y: auto; }
+        .winner-row {
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-title">Luckydraw SOKHENG</div>
+
+    <div class="app-container">
+        <div class="glass-panel">
+            <h2>📋 បញ្ជីឈ្មោះ</h2>
+            <textarea id="inputBox" placeholder="បញ្ចូលឈ្មោះ..." oninput="autoProcess()"></textarea>
+            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;" id="countText">សរុប៖ 0 នាក់</div>
+            <input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none">
+            <button class="btn btn-excel" onclick="document.getElementById('excelFile').click()">📂 Import Excel</button>
+            <button class="btn btn-spin" onclick="spin()">🎯 ចាប់ផ្តើមបង្វិល</button>
+        </div>
+
+        <div class="glass-panel middle-panel">
+            <div id="wheelWrapper">
+                <div class="pointer"></div>
+                <canvas id="wheel" width="1000" height="1000"></canvas>
+            </div>
+            <div id="result">Ready!</div>
+        </div>
+
+        <div class="glass-panel">
+            <h2 style="color: var(--secondary)">📜 អ្នកឈ្នះ</h2>
+            <div class="history-list" id="winnerList"></div>
+        </div>
+    </div>
+
+<script>
+    let items = [];
+    let currentRotation = 0;
+    let isSpinning = false;
+    let winners = [];
+
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const colors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16", "#f43f5e", "#0ea5e9"];
+
+    function autoProcess() {
+        if (isSpinning) return;
+        const text = document.getElementById("inputBox").value;
+        items = [...new Set(text.split(/[,\n]+/).map(s => s.trim()).filter(s => s !== ""))];
+        document.getElementById("countText").innerText = `សរុប៖ ${items.length} នាក់`;
+        drawWheel();
+    }
+
+    document.getElementById("excelFile").addEventListener("change", function(e) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
+            const newNames = rows.flat().filter(n => n).map(n => n.toString().trim());
+            const currentText = document.getElementById("inputBox").value;
+            const combined = [...new Set([...currentText.split(/[,\n]+/).map(s => s.trim()).filter(s => s !== ""), ...newNames])];
+            document.getElementById("inputBox").value = combined.join("\n");
+            autoProcess();
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+    });
+
+    function drawWheel() {
+        const size = 1000;
+        const center = size / 2;
+        const radius = size / 2 - 20;
+        ctx.clearRect(0, 0, size, size);
+
+        if (items.length === 0) {
+            ctx.fillStyle = "rgba(255,255,255,0.05)";
+            ctx.beginPath(); ctx.arc(center, center, radius, 0, Math.PI * 2); ctx.fill();
+            return;
+        }
+
+        const arc = (2 * Math.PI) / items.length;
+        items.forEach((item, i) => {
+            const angle = i * arc;
+            ctx.beginPath();
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.moveTo(center, center);
+            ctx.arc(center, center, radius, angle, angle + arc);
+            ctx.lineTo(center, center);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,0.1)";
+            ctx.stroke();
+
+            ctx.save();
+            ctx.translate(center, center);
+            ctx.rotate(angle + arc / 2);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#fff";
+            ctx.font = items.length > 30 ? "22px Siemreab" : "bold 32px Siemreab";
+            ctx.fillText(item.length > 15 ? item.substring(0,13) + ".." : item, radius - 50, 10);
+            ctx.restore();
+        });
+    }
+
+    function spin() {
+        if (isSpinning || items.length < 2) return;
+        isSpinning = true;
+        document.getElementById("result").innerText = "Spinning...";
+        
+        const randomExtra = Math.random() * 360;
+        const spinTotal = 2880 + randomExtra; 
+        currentRotation += spinTotal;
+
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+        setTimeout(() => {
+            isSpinning = false;
+            const actualDegree = currentRotation % 360;
+            const arcSize = 360 / items.length;
+            const adjustedDegree = (360 - actualDegree + 270) % 360;
+            const winnerIndex = Math.floor(adjustedDegree / arcSize);
+            const winner = items[winnerIndex];
+            
+            document.getElementById("result").innerText = "🏆 " + winner;
+            winners.unshift(winner);
+            updateHistory();
+        }, 6000);
+    }
+
+    function updateHistory() {
+        document.getElementById("winnerList").innerHTML = winners.map((w, idx) => `
+            <div class="winner-row">
+                <span><b>${w}</b></span>
+                <span style="color: #64748b; font-size: 11px;">#${winners.length - idx}</span>
+            </div>
+        `).join("");
+    }
+
+    autoProcess();
+</script>
+
+</body>
+</html>
